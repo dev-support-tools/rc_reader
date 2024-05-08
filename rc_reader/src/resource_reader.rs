@@ -126,6 +126,9 @@ fn create_dialogs(resource_blocks: &Vec<ResourceBlock>) -> Vec<Dialog> {
                 if !is_begin && idd.len() > 0 {
                     let styles_array = line.split("|");
                     for style in styles_array {
+                        if style.trim().len() == 0 {
+                            continue;
+                        }
                         styles.push(String::from(style.trim()));
                     }
                 }

@@ -18,6 +18,15 @@ impl Rect {
             height: height,
         }
     }
+    
+    pub fn default() -> Rect {
+        Rect {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        }
+    }
 }
 
 // Rectに関する関数を定義する

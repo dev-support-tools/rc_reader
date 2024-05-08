@@ -14,5 +14,10 @@ impl Font {
             name: String::new(),
         }
     }
-    
+    pub fn default() -> Font {
+        Font {
+            size: 0,
+            name: String::new(),
+        }
+    }
 }

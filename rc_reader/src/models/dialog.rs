@@ -33,4 +33,17 @@ impl Dialog {
             reference_string_table_ids: Vec::new(),
         }
     }
+    pub fn default() -> Dialog {
+        Dialog {
+            id: String::new(),
+            styles: Vec::new(),
+            text: String::new(),
+            font: Font::default(),
+            rect: Rect::default(),
+            controls: Vec::new(),
+            code_infos: Vec::new(),
+            header_files: Vec::new(),
+            reference_string_table_ids: Vec::new(),
+        }
+    }
 }
