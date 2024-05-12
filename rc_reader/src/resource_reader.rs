@@ -7,17 +7,13 @@ use crate::models::control::Control;
 use crate::models::font::Font;
 use crate::models::rect::Rect;
 
-pub fn read_resource_files(rc_files: glob::Paths) -> Vec<ResourceFile> {
+pub fn read_resource_files(rc_files: Vec<String>) -> Vec<ResourceFile> {
     let mut resource_files = Vec::new();
 
     // リソースファイルの列挙
     for rc_file in rc_files {
-
-        // ファイルのパスを取得
-        let rc_file: Option<std::path::PathBuf> = rc_file.ok();
-        let rc_file_path = rc_file.as_ref().unwrap();
-
-        let utf16_text = crate::file_reader::read_utf16_file(rc_file_path);
+        let path_buf = std::path::PathBuf::from(&rc_file);
+        let utf16_text = crate::file_reader::read_utf16_file(&path_buf);
         // \r\nを\nに変換、\rを\nに変換
         let rc_text = utf16_text.replace("\r\n", "\n").replace("\r", "\n");
         // \nで分割
@@ -31,7 +27,7 @@ pub fn read_resource_files(rc_files: glob::Paths) -> Vec<ResourceFile> {
         // Dialogデータ作成
         let dialogs = create_dialogs(&resource_blocks.clone());
         let resource_file = ResourceFile{
-            path: rc_file_path.to_str().unwrap().to_string(),
+            path: rc_file,
             lines: lines.map(|s| s.to_string()).collect(),
             resource_blocks: resource_blocks,
             dialogs: dialogs,
@@ -57,6 +53,8 @@ fn create_dialogs(resource_blocks: &Vec<ResourceBlock>) -> Vec<Dialog> {
             };
             let mut controls: Vec<Control> = Vec::new();
             let mut is_begin = false;
+
+            let mut control_multi_line = String::new();
 
             for line in &resource_block.lines {
 
@@ -136,15 +134,25 @@ fn create_dialogs(resource_blocks: &Vec<ResourceBlock>) -> Vec<Dialog> {
                 // CONTROL
                 if is_begin {
                     let line = line.trim();
-                    let space_pos = line.find(" ").unwrap();
-
+                    let space_pos = line.find(" ").unwrap_or_else(|| {println!("space_pos is None. line: {}", line);0});
                     // コントロールタイプ
                     let control_type = &line[0..space_pos];
 
                     // コントロール情報
-                    let control_info_text = line[space_pos..].trim();
+                    let mut control_info_text = String::from(line[space_pos..].trim());
 
-                    let mut control_info = control_info_text.split(",");
+                    // control_multi_lineとcontrol_info_textを連結する
+                    control_info_text = format!("{}{}", &control_multi_line, &control_info_text);
+
+                    let mut control_info =  control_info_text.split(",");
+                    // control_infoの要素数が6未満の場合は次のループで処理する。
+                    if control_info.clone().count() < 6 {
+                        control_multi_line = control_info_text.to_string();
+                        continue;
+                    }else{
+                        control_multi_line = String::new();
+                    }
+
                     // コントロールリソース
                     let control_resource = control_info.nth(0).unwrap().trim();
 

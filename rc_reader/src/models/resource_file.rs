@@ -15,7 +15,7 @@ impl ClassInfo {
         ClassInfo {
             class_name: String::new(),
             base_class_name: String::new(),
-            dialog: Some(Dialog::default()),
+            dialog: None,
         }
     }
 }
