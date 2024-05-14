@@ -144,6 +144,11 @@ fn create_dialogs(resource_blocks: &Vec<ResourceBlock>) -> Vec<Dialog> {
                     // control_multi_lineとcontrol_info_textを連結する
                     control_info_text = format!("{}{}", &control_multi_line, &control_info_text);
 
+                    // control_info_textをtrim後、最後の文字が「,」の場合はcontinueする
+                    if control_info_text.trim().ends_with(",") {
+                        continue;
+                    }
+
                     let mut control_info =  control_info_text.split(",");
                     // control_infoの要素数が6未満の場合は次のループで処理する。
                     if control_info.clone().count() < 6 {
