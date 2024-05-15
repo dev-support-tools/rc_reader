@@ -2,6 +2,10 @@ use serde::{Deserialize, Serialize};
 use crate::models::control::Control;
 use crate::models::rect::Rect;
 
+use svg::Document;
+use svg::node::element::{Path, SVG};
+use svg::node::element::path::Data;
+
 use super::font::Font;
 use super::resource_file::CodeInfo;
 use super::string_table::StringTable;
@@ -45,5 +49,28 @@ impl Dialog {
             header_files: Vec::new(),
             reference_string_table_ids: Vec::new(),
         }
+    }
+    
+    pub(crate) fn create_svg(&self) -> SVG {
+        
+        // DialogのSVGを作成
+        let mut data = Data::new();
+        data = data.move_to((self.rect.x, self.rect.y));
+        data = data.line_to((self.rect.x + self.rect.width, self.rect.y));
+        data = data.line_to((self.rect.x + self.rect.width, self.rect.y + self.rect.height));
+        data = data.line_to((self.rect.x, self.rect.y + self.rect.height));
+        data = data.close();
+        let path = Path::new()
+            .set("fill", "none")
+            .set("stroke", "black")
+            .set("stroke-width", 1)
+            .set("d", data);
+
+        let mut svg = Document::new()
+            .set("width", self.rect.width)
+            .set("height", self.rect.height)
+            .add(path);
+
+        svg // Return the svg variable
     }
 }

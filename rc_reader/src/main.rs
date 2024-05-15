@@ -52,9 +52,24 @@ fn main() {
             "2" => read_resource_files(),
             "3" => create_code_info(),
             "4" => create_dialog_info(),
+            "5" => create_dialog_svg_files(),
             _ => {
                 is_loop = false;
             }
+        }
+    }
+}
+
+fn create_dialog_svg_files() {
+    // resouce_infos.jsonファイルの読み込み
+    let resource_infos_json = fs::read_to_string(RESOURCE_INFOS).unwrap();
+    let mut resource_files: Vec<ResourceFile> = serde_json::from_str(&resource_infos_json).unwrap();
+
+    for resource_file in &mut resource_files {
+        for dialog in &mut resource_file.dialogs {
+            let svg = dialog.create_svg();
+            let svg_file_path = format!(r"{}/{}.svg", ".", dialog.id);
+            std::fs::write(svg_file_path, svg).unwrap();
         }
     }
 }
